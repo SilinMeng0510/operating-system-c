@@ -1,0 +1,8 @@
+    1  ls
+    2  cd Desktop/cs149/WS1
+    3  ls -;atr
+    4  ls -lstr
+    5  git add .
+    6  git status
+    7  git branch
+    8  history > cmds.log
