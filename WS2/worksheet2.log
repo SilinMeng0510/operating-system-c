@@ -1,0 +1,54 @@
+    1  ls
+    2  git status
+    3  git commit -m "First commit" -a
+    4  git config --global use.com"
+    5  cd Desktop/cs149/WS1
+    6  kate 1_15_LAB.c
+    7  ls
+    8  kate 1_15_LAB.c
+    9  kate 1_16_LAB.c
+   10  ls
+   11  kate 1_17_LAB.c
+   12  kate 1_16_LAB.c
+   13  kate 1_17_LAB.c
+   14  kate 1_18_LAB.c
+   15  kate 1_19_LAB.c
+   16  kate 1_20_LAB.c
+   17  ls
+   18  git add *.c
+   19  git status
+   20  git commit -m "code completed for WS1"
+   21  git log
+   22  git push
+   23  gcc -o 1_15_LAB 1_15_LAB.c
+   24  sudo apt install gcc
+   25  gcc -o 1_15_LAB 1_15_LAB.c
+   26  ls
+   27  ./1_15_LAB
+   28  gcc -o 1_16_LAB 1_16_LAB.c
+   29  gcc -o 1_17_LAB 1_17_LAB.c
+   30  gcc -o 1_18_LAB 1_18_LAB.c
+   31  gcc -o 1_19_LAB 1_19_LAB.c
+   32  gcc -o 1_20_LAB 1_20_LAB.c
+   33  ls
+   34  ls -lstir
+   35  ./1_16_LAB
+   36  ./1_17_LAB
+   37  ./1_18_LAB
+   38  ./1_19_LAB
+   39  ./1_20_LAB
+   40  git push
+   41  ghp_rnlKNZ2JX3Uuc2mB5yn4i6ODbxMq840Qyz
+   42  cd Desktop
+   43  cat > token.txt
+   44  cd Desktop/cs149/Ws2
+   45  cd Desktop/cs149/WS2
+   46  kate 2_25_LAB.c
+   47  ls
+   48  kate 2_29_LAB.c
+   49  kate 2_32_LAB.c
+   50  kate 2_34_LAB.c
+   51  kate 3_22_LAB.c
+   52  ls
+   53  git status
+   54  history > worksheet2.log
