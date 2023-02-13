@@ -38,7 +38,7 @@
    38  ./1_19_LAB
    39  ./1_20_LAB
    40  git push
-   41  ghp_rnlKNZ2JX3Uuc2mB5yn4i6ODbxMq840Qyz
+   41  ls
    42  cd Desktop
    43  cat > token.txt
    44  cd Desktop/cs149/Ws2
