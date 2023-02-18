@@ -12,7 +12,14 @@
 
 int main(int argc, char* argv[])
 {
+    if (argv[1] == NULL){ // exit if there is no file specified
+        exit(0);
+    }
     FILE *file = fopen(argv[1], "r"); // set up file opener and variables that will be used later
+    if (file == NULL) { // return error if file can't be opened
+    printf("error: cannot open file\n");
+    exit(1);
+    }
     char line[256];
     char names[100][30];
     int occurence[100] = {0};
