@@ -2,7 +2,7 @@
  * Description: Assignment 1: Names occurence to file: This code takes a file of names and output the names and their occurence to a new file
  * Author names:Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
- * Last modified date: 2/10/23
+ * Last modified date: 2/16/23
  * Creation date: 2/10/23
  **/
 #include <stdio.h>
@@ -41,10 +41,11 @@ int main(int argc, char* argv[])
     }
     fclose(file);
     
-    FILE *output;
-    output = fopen("output.txt", "w");
-    for (int i = 0; i < namesMap; i++) {
-        fprintf(output, "%s: %d\n", names[i], occurence[i]);
+    int len;
+    for (int i = 0; i < namesMap; i++) { 
+        len = strlen(names[i]);
+        names[i][--len] = '\0';
+        fprintf(stdout, "%s: %d\n", names[i], occurence[i]);
     }
 
     return 0;
