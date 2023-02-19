@@ -1,5 +1,5 @@
 /**
- * Description: Assignment 1: Names occurence to file: This code takes a file of names and output the names and their occurence to a new file
+ * Description: Assignment 1: countnames: This code takes a file of names and output the names and their occurrence using an array
  * Author names:Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
  * Last modified date: 2/18/23
