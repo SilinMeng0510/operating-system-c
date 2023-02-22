@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
     while (fgets(line, sizeof(line), file)) { // This loop will keep retreving names from each lines of the file until reaching the end
         if (line[0] == '\n') { // Printing Error message while there is a empty line
             fprintf(stderr, "Warning - Line %d is empty.\n", lineCounter);
+            ++lineCounter; // Count which line we are in
             continue;
         }
         int found = 0;
