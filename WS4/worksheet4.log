@@ -1,0 +1,86 @@
+    1  ls
+    2  git status
+    3  git commit -m "First commit" -a
+    4  git config --global use.com"
+    5  cd Desktop/cs149/WS1
+    6  kate 1_15_LAB.c
+    7  ls
+    8  kate 1_15_LAB.c
+    9  kate 1_16_LAB.c
+   10  ls
+   11  kate 1_17_LAB.c
+   12  kate 1_16_LAB.c
+   13  kate 1_17_LAB.c
+   14  kate 1_18_LAB.c
+   15  kate 1_19_LAB.c
+   16  kate 1_20_LAB.c
+   17  ls
+   18  git add *.c
+   19  git status
+   20  git commit -m "code completed for WS1"
+   21  git log
+   22  git push
+   23  gcc -o 1_15_LAB 1_15_LAB.c
+   24  sudo apt install gcc
+   25  gcc -o 1_15_LAB 1_15_LAB.c
+   26  ls
+   27  ./1_15_LAB
+   28  gcc -o 1_16_LAB 1_16_LAB.c
+   29  gcc -o 1_17_LAB 1_17_LAB.c
+   30  gcc -o 1_18_LAB 1_18_LAB.c
+   31  gcc -o 1_19_LAB 1_19_LAB.c
+   32  gcc -o 1_20_LAB 1_20_LAB.c
+   33  ls
+   34  ls -lstir
+   35  ./1_16_LAB
+   36  ./1_17_LAB
+   37  ./1_18_LAB
+   38  ./1_19_LAB
+   39  ./1_20_LAB
+   40  git push
+   41  ghp_rnlKNZ2JX3Uuc2mB5yn4i6ODbxMq840Qyz
+   42  cd Desktop
+   43  cat > token.txt
+   44  cd Desktop/cs149
+   45  ls
+   46  git status
+   47  git pull
+   48  git status
+   49  ls
+   50  cd WS4
+   51  ls
+   52  gcc -o 6_20 6_20_LAB.c
+   53  gcc -o 6_30 6_30_LAB.c
+   54  ls
+   55  ./6_20
+   56  ./6_30
+   57  ls
+   58  rm 6_20 6_30
+   59  ls
+   60  cd ~
+   61  ls
+   62  wget http://www.apuebook.com/src.3e.tar.gz
+   63  ls
+   64  gunzip src.3e.tar
+   65  tar xvf src.3e.tar
+   66  cd apue.3e
+   67  cd proc
+   68  make all
+   69  ./fork1
+   70  ./fork2
+   71  ./fork1
+   72  ./fork2
+   73  cd ~
+   74  pwd
+   75  pstree
+   76  ps -a -f -x
+   77  ps -a -f -x | more
+   78  top
+   79  man kill
+   80  echo $?
+   81  echo $$
+   82  pstree
+   83  ps -a -f -x
+   84  echo $$
+   85  cd Desktop/cs149/WS4
+   86  history > worksheet4.log
