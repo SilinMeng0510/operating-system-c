@@ -1,6 +1,6 @@
 /**
- * Description: Assignment 1: countnames: This code takes a file of names and output the names and their occurrence using an array
- * Author names:Silin Meng, Ibrahim Dobashi
+ * Description: Assignment 2: countnames_parallel: This code takes multiple file of names and output the names and their occurrence using an array
+ * Author names: Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
  * Last modified date: 2/18/23
  * Creation date: 2/10/23
