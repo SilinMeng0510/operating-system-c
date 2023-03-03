@@ -22,7 +22,7 @@
 
 #include <unistd.h>
 
-#include <sys/types.h>
+#include <sys/wait.h>
 
 
 
@@ -39,7 +39,11 @@ int main(){
          printf("hello world from PID %d!\n", getpid());
          return 0;
       }
+      else {
+         wait(NULL);
+      }
    }
+
 
     return 0;
 
