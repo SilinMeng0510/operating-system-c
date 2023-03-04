@@ -19,7 +19,7 @@ typedef struct my_data {    // a structured data with 30 characters name and occ
     int count;
 } my_data;
 
-int count(FILE *file, struct my_data *namecounts){
+int count(FILE *file, struct my_data *namecounts, char *file_name){
 
     char line[MAX_LEN]; //necessary local variable for reading file
     int namesMap = 0;
@@ -27,7 +27,7 @@ int count(FILE *file, struct my_data *namecounts){
 
     while (fgets(line, sizeof(line), file)) { // This loop will keep retreving names from each lines of the file until reaching the end
         if (line[0] == '\n' || line[0] == ' ') { // Printing Error message while there is a empty line
-            fprintf(stderr, "Warning - Line %d is empty.\n", lineCounter);
+            fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, lineCounter);
             ++lineCounter; // Count which line we are in
             continue;
         }
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
                 write(pfds[i-1][1], namecounts, sizeof(my_data) * MAX_NAME);
                 exit(1);
             }
-            namesMap = count(file, namecounts); // implement function that return namecounts result of a file and number of result
+            namesMap = count(file, namecounts, argv[i]); // implement function that return namecounts result of a file and number of result
             fclose(file);   // close file
             write(pfds[i-1][1], &namesMap, sizeof(namesMap)); // write results to parent through pipe
             write(pfds[i-1][1], namecounts, sizeof(my_data) * MAX_NAME);
