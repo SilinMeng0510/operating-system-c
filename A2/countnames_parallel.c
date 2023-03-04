@@ -2,12 +2,13 @@
  * Description: Assignment 2: countnames_parallel: This code takes multiple file of names and output the names and their occurrence using an array
  * Author names: Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
- * Last modified date: 2/18/23
- * Creation date: 2/10/23
+ * Last modified date: 3/3/23
+ * Creation date: 2/25/23
  **/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include <string.h>
 
 #define MAX_NAME 100
@@ -63,12 +64,12 @@ int main(int argc, char* argv[])
         exit(0);
     }
 
-    int pfds[2];
-    pipe(pfds);
     int pid;
     struct my_data total_namecounts[MAX_NAME] = { { '\0', 0 } };
     int total_count = 0;
 
+    int pfds[2];
+    pipe(pfds);
     for(int i = 1; i < argc; ++i){
         pid = fork();
         if (pid < 0){
@@ -90,8 +91,11 @@ int main(int argc, char* argv[])
             write(pfds[1], namecounts, sizeof(my_data) * MAX_NAME);
             return 0;
         }
+        int pfds[2];
+        pipe(pfds);
     }
-    for(int i = 1; i < argc; ++i){
+
+    while(wait(NULL) != -1){
         struct my_data namecounts[MAX_NAME] = { { '\0', 0 } };
         int namesMap = 0;
         read(pfds[0], &namesMap, sizeof(namesMap));
