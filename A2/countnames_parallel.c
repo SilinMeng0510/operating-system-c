@@ -67,10 +67,10 @@ int main(int argc, char* argv[])
     int pid;
     struct my_data total_namecounts[MAX_NAME] = { { '\0', 0 } };
     int total_count = 0;
-
-    int pfds[2];
-    pipe(pfds);
+    int pfds[argc - 1][2];
+    
     for(int i = 1; i < argc; ++i){
+        pipe(pfds[i-1]);
         pid = fork();
         if (pid < 0){
             fprintf(stderr, "error: can't fork");
@@ -81,25 +81,26 @@ int main(int argc, char* argv[])
             int namesMap = 0;
             if (file == NULL) { // return error if file can't be opened
                 fprintf(stderr, "error: cannot open file %s\n", argv[i]);
-                write(pfds[1], &namesMap, sizeof(namesMap));
-                write(pfds[1], namecounts, sizeof(my_data) * MAX_NAME);
+                write(pfds[i-1][1], &namesMap, sizeof(namesMap));
+                write(pfds[i-1][1], namecounts, sizeof(my_data) * MAX_NAME);
                 exit(1);
             }
             namesMap = count(file, namecounts);
             fclose(file);
-            write(pfds[1], &namesMap, sizeof(namesMap));
-            write(pfds[1], namecounts, sizeof(my_data) * MAX_NAME);
+            write(pfds[i-1][1], &namesMap, sizeof(namesMap));
+            write(pfds[i-1][1], namecounts, sizeof(my_data) * MAX_NAME);
             return 0;
         }
         int pfds[2];
         pipe(pfds);
     }
 
+    int pip_count = 0;
     while(wait(NULL) != -1){
         struct my_data namecounts[MAX_NAME] = { { '\0', 0 } };
         int namesMap = 0;
-        read(pfds[0], &namesMap, sizeof(namesMap));
-        read(pfds[0], namecounts, sizeof(my_data) * MAX_NAME);
+        read(pfds[pip_count][0], &namesMap, sizeof(namesMap));
+        read(pfds[pip_count][0], namecounts, sizeof(my_data) * MAX_NAME);
 
         for (int i = 0; i < namesMap; i++) {
             int found = 0;
@@ -116,6 +117,7 @@ int main(int argc, char* argv[])
                 total_count++;
             }
         }
+        pip_count++;
     }
 
     for (int i = 0; i < total_count; i++) { // This for loop will print all the names and its occurence.
