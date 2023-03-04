@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
             struct my_data namecounts[MAX_NAME] = { { '\0', 0 } };
             int namesMap = 0;
             if (file == NULL) { // return error if file can't be opened
-                fprintf(stderr, "error: cannot open file %s\n", argv[i]);
+                fprintf(stderr, "range: cannot open file %s\n", argv[i]);
                 write(pfds[i-1][1], &namesMap, sizeof(namesMap));   // write nothing to parent for breaking loop
                 write(pfds[i-1][1], namecounts, sizeof(my_data) * MAX_NAME);
                 exit(1);
