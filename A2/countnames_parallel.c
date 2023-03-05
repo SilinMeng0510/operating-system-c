@@ -19,6 +19,13 @@ typedef struct my_data {    // a structured data with 30 characters name and occ
     int count;
 } my_data;
 
+/**
+* This function counts and stores the occurence of each name in a file provided in the 
+*     parameter and stores them in the namecounts struct then it returns the number of unique names in the file
+* Assumption: names from file are separated by a newline character
+* Input parameters: file(FILE), namescounts(struct), file_name(char)
+* Returns: an integer
+**/
 int count(FILE *file, struct my_data *namecounts, char *file_name){
 
     char line[MAX_LEN]; //necessary local variable for reading file
