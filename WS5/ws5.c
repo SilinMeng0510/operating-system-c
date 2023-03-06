@@ -29,23 +29,11 @@
 int main(){
    pid_t pid;
 
-   for (int i = 0; i < 4; i++) {
-      pid = fork();
-      if (pid < 0) {
-         fprintf(stderr, "fork failed\n");
-         exit(1);
-      } 
-      else if (pid == 0) { 
-         printf("hello world from PID %d!\n", getpid());
-         return 0;
-      }
-      else {
-         wait(NULL);
-      }
-   }
+   fork();
+   fork();
+   printf("hello world from PID %d!\n", getpid());
 
-
-    return 0;
+   return 0;
 
 }
 
