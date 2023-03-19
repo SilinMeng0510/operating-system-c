@@ -1,3 +1,11 @@
+/**
+ * Description: Assignment 3: This code read multiple commands through stdin and run them through execvp. The result will be written in created files under name of child pid.
+ * Author names: Silin Meng, Ibrahim Dobashi
+ * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
+ * Last modified date: 03/19/2023
+ * Creation date: 03/17/2023
+ **/
+
 #include <sys/wait.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -5,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#define MAX_COMMAND 100
 #define MAX_LEN 30
 
 int main(void){
@@ -44,7 +53,7 @@ int main(void){
 			fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", command, getpid(), getppid());
 			fflush(STDIN_FILENO);
 
-			char *args[30];
+			char *args[MAX_LEN];
 			int count = 0;
 			args[count] = strtok(line, " ");
 			while (args[count] != NULL) {
