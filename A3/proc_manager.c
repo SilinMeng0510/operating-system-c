@@ -94,13 +94,13 @@ int main(void){
 		fflush(STDIN_FILENO);
 
 		if(WIFEXITED(status)){
-            fprintf(stderr, "Exited with exitcode = %d.\n", WEXITSTATUS(status));
+            fprintf(stderr, "Exited with exitcode = %d\n", WEXITSTATUS(status));
         }
-        else if(WTERMSIG(status) == 15){
-            fprintf(stderr, "Killed with signal 15\n");
+		else if(WTERMSIG(status)){
+            fprintf(stderr, "Killed with signal %d\n", WTERMSIG(status));
         }
-        else if(WIFSIGNALED(status)){
-            fprintf(stderr, "Exited with exitcode = %d.\n", WTERMSIG(status));
+		else if(WIFSIGNALED(status)){
+            fprintf(stderr, "Exited with exitcode = %d\n", WTERMSIG(status));
         }
 	}
 
