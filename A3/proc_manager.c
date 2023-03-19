@@ -9,54 +9,99 @@
 
 int main(void){
 	pid_t	pid;
-	int		status;
-	int fd1, fd2;
+	int	status;
+	int command;
 	char line[MAX_LEN];
 	
+	command = 0;
 	while(fgets(line, sizeof(line), stdin)) {
 
+		++command;
 		if ((pid = fork()) < 0) {
 			fprintf(stderr, "error: can't fork");
 		} 
 		else if (pid == 0) {
-			char *filename_out;
-			snprintf(filename_out, 10, "%d.out", getpid());
-			printf("%s", filename_out);
-			fd1 = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777);
-			dup2(fd1, 1);
+			char filename_out[10];
+			char filename_err[10];
+			sprintf(filename_out, "%d.out", getpid());
+        	sprintf(filename_err, "%d.err", getpid());
 
-			printf("%s", filename_out);
+			int fdout, fderr;
+			if ((fdout = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+				perror("open file failed");
+                exit(2);
+			}
+			if ((fderr = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+				perror("open file failed");
+                exit(2);
+			}
+			
+			dup2(fdout, STDOUT_FILENO);
+			close(fdout);
+			dup2(fderr, STDERR_FILENO);
+			close(fderr);
 
-			// char *filename_err;
-			// snprintf(filename_err, 10, "%d.err", getpid());
-			// int file_desc_err = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777);
-			// dup2(file_desc_err, 2);
+			fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", command, getpid(), getppid());
+			fflush(STDIN_FILENO);
 
-			// char *args[30];
-			// int count = 0;
-			// args[count] = strtok(line, " ");
-			// while (args[count] != NULL) {
-			// 	count++;
-			// 	args[count] = strtok(NULL, " ");
-			// }
-			// char *argv[count+1];
-			// for (int i = 0; i < count; i++){
-			// 	argv[i] = args[i];
-			// }
+			char *args[30];
+			int count = 0;
+			args[count] = strtok(line, " ");
+			while (args[count] != NULL) {
+				count++;
+				args[count] = strtok(NULL, " ");
+			}
 
-			// int len = strlen(argv[count-1]);
-			// argv[count-1][--len] = '\0';
+			char *argv[count+1];
+			for (int i = 0; i < count; i++){
+				argv[i] = args[i];
+			}
 
-			// argv[count] = NULL;
-			// execvp(argv[0], argv);
-			// perror("execvp failed");
-			// close(file_desc_err);
-			exit(1);
+			int len = strlen(argv[count-1]);
+			argv[count-1][--len] = '\0';
+
+			argv[count] = NULL;
+
+			if (execvp(argv[0], argv) < 0){
+				perror("execvp failed");
+				exit(2);
+			}
+		}
+	}
+
+	while((pid = wait(&status)) > 0){
+		char filename_out[10];
+		char filename_err[10];
+		sprintf(filename_out, "%d.out", pid);
+        sprintf(filename_err, "%d.err", pid);
+
+		int fdout, fderr;
+		if ((fdout = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+			perror("open file failed");
+            exit(2);
+		}
+		if ((fderr = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+			perror("open file failed");
+            exit(2);
 		}
 
-		if ((pid = waitpid(pid, &status, 0)) < 0){
-			printf("DONE ");
-		}
+		dup2(fdout, STDOUT_FILENO);
+		close(fdout);
+		dup2(fderr, STDERR_FILENO);
+		close(fderr);
+
+		fprintf(stdout, "Finished child %d pid of parent %d\n", pid, getpid());
+		fflush(STDIN_FILENO);
+
+		if(WIFEXITED(status)){
+            fprintf(stderr, "Exited with exitcode = %d.\n", WEXITSTATUS(status));
+        }
+        else if(WTERMSIG(status) == 15){
+            fprintf(stderr, "Killed with signal 15\n");
+        }
+        else if(WIFSIGNALED(status)){
+            fprintf(stderr, "Exited with exitcode = %d.\n", WTERMSIG(status));
+        }
 	}
 
 	exit(0);
