@@ -1,0 +1,181 @@
+    1  ls
+    2  git status
+    3  git commit -m "First commit" -a
+    4  git config --global use.com"
+    5  cd Desktop/cs149/WS1
+    6  kate 1_15_LAB.c
+    7  ls
+    8  kate 1_15_LAB.c
+    9  kate 1_16_LAB.c
+   10  ls
+   11  kate 1_17_LAB.c
+   12  kate 1_16_LAB.c
+   13  kate 1_17_LAB.c
+   14  kate 1_18_LAB.c
+   15  kate 1_19_LAB.c
+   16  kate 1_20_LAB.c
+   17  ls
+   18  git add *.c
+   19  git status
+   20  git commit -m "code completed for WS1"
+   21  git log
+   22  git push
+   23  gcc -o 1_15_LAB 1_15_LAB.c
+   24  sudo apt install gcc
+   25  gcc -o 1_15_LAB 1_15_LAB.c
+   26  ls
+   27  ./1_15_LAB
+   28  gcc -o 1_16_LAB 1_16_LAB.c
+   29  gcc -o 1_17_LAB 1_17_LAB.c
+   30  gcc -o 1_18_LAB 1_18_LAB.c
+   31  gcc -o 1_19_LAB 1_19_LAB.c
+   32  gcc -o 1_20_LAB 1_20_LAB.c
+   33  ls
+   34  ls -lstir
+   35  ./1_16_LAB
+   36  ./1_17_LAB
+   37  ./1_18_LAB
+   38  ./1_19_LAB
+   39  ./1_20_LAB
+   40  git push
+   41  ghp_rnlKNZ2JX3Uuc2mB5yn4i6ODbxMq840Qyz
+   42  cd Desktop
+   43  cat > token.txt
+   44  cd . .
+   45  cd ..
+   46  ls
+   47  cd -
+   48  wget https://github.com/torvalds/linux/archive/master.zip (this will download the entire linux kernel source code)
+   49  wget https://github.com/torvalds/linux/archive/master.zip
+   50  unzip master.zip
+   51  cd linux-master
+   52  pwd
+   53  alias l='ls -latr'
+   54  l
+   55  find . -name mem.c
+   56  find . -name mem.c 
+   57  find . -name mem.c | xargs head
+   58  find . -name mem.c | xargs grep 86
+   59  cd ..
+   60  history > worksheet3.log
+   61  l
+   62  ls
+   63  head worcd apue.3e
+   64  ls
+   65  cd proc
+   66  ls
+   67  kate test1.c
+   68  cd ~
+   69  cd cs149
+   70  cd Desktop/cs149
+   71  ls
+   72  git pull
+   73  git status
+   74  cd WS6
+   75  ls
+   76  l
+   77  ls -latr
+   78  ls
+   79  make all
+   80  sudo apt-get install make
+   81  ls
+   82  make all
+   83  make .
+   84  make all
+   85  make test1
+   86  kate
+   87  kate apue.h
+   88  ls
+   89  kate test1.c
+   90  make test1
+   91  kate test1.c
+   92  make test1
+   93  cd ~
+   94  ls
+   95  cd apue.e3
+   96  cd apue.3e
+   97  ls
+   98  cd proc
+   99  ls
+  100  make test1.c
+  101  ./test1
+  102  cd ..
+  103  ls
+  104  cd ..
+  105  cd Desktop/cs149
+  106  ls
+  107  cd WS6
+  108  gcc -ansi -i../include -DLINUX -D_GNU_SOURCE -Wall -o test1 test1.c -L../lib -lapue
+  109  gcc -ansi -l../include -DLINUX -D_GNU_SOURCE -Wall -o test1 test1.c -L../lib -lapue
+  110  cd ~
+  111  cd apue.3e
+  112  cd proc
+  113  make test1.c
+  114  make all
+  115  gcc -ansi -l../include -DLINUX -D_GNU_SOURCE -Wall -o test1 test1.c -L../lib -lapue
+  116  ls
+  117  cd ~
+  118  sudo apt-get install make
+  119  cd apue.3e
+  120  cd proc
+  121  make test1.c
+  122  cd ~
+  123  l
+  124  cd apue.3e
+  125  cd proc
+  126  ls
+  127  make all
+  128  ./test1
+  129  kate test1.c
+  130  make all
+  131  kate test1.c
+  132  make all
+  133  ./test1
+  134  kate test1.c
+  135  make all
+  136  ./test1
+  137  cp ./test1.c ../../Desktop/cs149/WS6
+  138  cd ../../Desktop/cs149/WS6
+  139  ls
+  140  make all
+  141  gcc -ansi -I../include -Wall -DLINUX -D_GNU_SOURCE  test1.c -o test1  -L../lib -lapue
+  142  git status
+  143  ls
+  144  make 5_27_LAB.c
+  145  ls
+  146  gcc 5_27_LAB.c LAB1
+  147  gcc -o LAB1 5_27_LAB.c
+  148  gcc -o LAB2 6_35_LAB.c
+  149  ls
+  150  ./LAB1
+  151  ./LAB2
+  152  ls
+  153  rm LAB1
+  154  rm LAB2
+  155  ls
+  156  gcc -ansi -I../include -Wall -DLINUX -D_GNU_SOURCE  test1.c -o test1  -L../lib -lapue
+  157  gcc -ansi -I../include -Wall -DLINUX -D_GNU_SOURCE  test1.c -o test1  -L../../../apue.e/lib -lapue
+  158  gcc -ansi -I../../../apue.3e/include -Wall -DLINUX -D_GNU_SOURCE  test1.c -o test1  -L../../../apue.3e/lib -lapue
+  159  ls
+  160  ./test1
+  161  ls
+  162  rm test1
+  163  ls
+  164  git status
+  165  git add .
+  166  git status
+  167  git commit -m "modify test1.c, clean code"
+  168  git push
+  169  git pull
+  170  cd ~/Desktop/
+  171  mkdir ws7
+  172  cd ws7
+  173  ls | wc
+  174  ls | sort
+  175  ls | sort | wc
+  176  ls -latr /bin/ > a.out
+  177  cat a.out | more
+  178  strace ls
+  179  du -sh .
+  180  df -i
+  181  history > worksheet7.log
