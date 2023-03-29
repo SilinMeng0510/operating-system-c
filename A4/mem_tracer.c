@@ -204,7 +204,7 @@ void PrintNodes(linkedNode* tempNode){
 
     printf("linkedlist[%d]=%s", tempNode->index, tempNode->line);
     if(tempNode->nextNode != NULL){
-        return PrintNodes(tempNode->nextNode);
+        PrintNodes(tempNode->nextNode);
     }
 
     POP_TRACE();
