@@ -1,9 +1,8 @@
 /**
- * Description: Assignment 4: This code read multiple commands through stdin and run them through execvp. The result will be written in created files under name of child pid.
- * Author names: Silin Meng, Ibrahim Dobashi
+ * Description: Assignment 4: This code read multiple commands through stdin and store them into an array and a linkedlist with memory tracing.
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
- * Last modified date: 03/19/2023
- * Creation date: 03/17/2023
+ * Last modified date: 03/29/2023
+ * Creation date: 03/25/2023
  **/
 
 #include <sys/wait.h> //import library
