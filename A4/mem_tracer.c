@@ -1,5 +1,5 @@
 /**
- * Description: Assignment 3: This code read multiple commands through stdin and run them through execvp. The result will be written in created files under name of child pid.
+ * Description: Assignment 4: This code read multiple commands through stdin and run them through execvp. The result will be written in created files under name of child pid.
  * Author names: Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
  * Last modified date: 03/19/2023
@@ -174,6 +174,10 @@ void FREE(void* p,char* file,int line)
 #define free(a) FREE(a,__FILE__,__LINE__)
 
 
+/**
+ * linkedList is a linked list of
+ * pointers, line, and index to the command inputs
+**/
 struct linkedList
 {
 	char* line;
@@ -181,29 +185,35 @@ struct linkedList
 	struct linkedList* nextNode;
 }; 
 
-typedef struct linkedList linkedNode;
+typedef struct linkedList linkedNode; //define linkedList wuth linkedNode type
 
 
+// -----------------------------------------
+// function CreateNode will create pointer to a linked node.
+// Returns the pointer of the created linked node
 linkedNode* CreateNode(char* line, int index, int size){
     PUSH_TRACE("CreateNode");
 
     linkedNode *tempNode;
-    tempNode = (linkedNode*) malloc(sizeof(linkedNode));
+    tempNode = (linkedNode*) malloc(sizeof(linkedNode)); // allocate memory address for the node and command line input
     tempNode->line = (char*) malloc(sizeof(char)*size);
-    strcpy(tempNode->line, line);
-    tempNode->index = index;
-    tempNode->nextNode = NULL;
+    strcpy(tempNode->line, line);	// copy the command line input into the allocated address
+    tempNode->index = index;	// assign index
+    tempNode->nextNode = NULL;	// set the nextnode to null
 
     POP_TRACE();
-    return tempNode;
+    return tempNode;	// return the created node
 }
 
 
+// -----------------------------------------
+// function PrintNodes will recursively print all linked nodes in a list.
+// Returns void after done
 void PrintNodes(linkedNode* tempNode){
     PUSH_TRACE("PrintNodes");
 
-    printf("linkedlist[%d]=%s", tempNode->index, tempNode->line);
-    if(tempNode->nextNode != NULL){
+    printf("linkedlist[%d]=%s", tempNode->index, tempNode->line); // print current node
+    if(tempNode->nextNode != NULL){	// if this is not the last node, print the next node
         PrintNodes(tempNode->nextNode);
     }
 
@@ -212,14 +222,17 @@ void PrintNodes(linkedNode* tempNode){
 }
 
 
+// -----------------------------------------
+// function FreeList will recursively free all memory of address of linked nodes in the list.
+// Returns void after done
 void FreeList(linkedNode* tempNode){
     PUSH_TRACE("FreeList");
 
-    if(tempNode->nextNode != NULL){
+    if(tempNode->nextNode != NULL){	// if this is not the last node, free the next node first
         FreeList(tempNode->nextNode);
-		free(tempNode->nextNode);
+		free(tempNode->nextNode);	// after the current node
     }
-    free(tempNode->line);
+    free(tempNode->line);	// free the command line input
 	
     POP_TRACE();	
 	return;
@@ -233,7 +246,7 @@ void FreeList(linkedNode* tempNode){
 char** add_size(char** array, int size) {
     PUSH_TRACE("add_size");
 
-    array = (char**) realloc(array, sizeof(char*) * size);
+    array = (char**) realloc(array, sizeof(char*) * size);	// reallocate the space for bigger array
 
     POP_TRACE();
     return array;
@@ -247,7 +260,7 @@ char** add_size(char** array, int size) {
 char** new_arr(char** array, int size) {
     PUSH_TRACE("new_arr");
 
-    array = (char**) malloc(sizeof(char*) * size);
+    array = (char**) malloc(sizeof(char*) * size);	// allocate an array that can store specified number of strings
 
     POP_TRACE();
     return array;
@@ -261,7 +274,7 @@ char** new_arr(char** array, int size) {
 void alloc_string(char** array, int index, int length) {
     PUSH_TRACE("alloc_string");
 
-    array[index] = (char*) malloc(sizeof(char) * length);
+    array[index] = (char*) malloc(sizeof(char) * length); // allocate space for the string
 
     POP_TRACE();
 	return;
@@ -276,34 +289,35 @@ linkedNode* make_extend_array()
 {
     PUSH_TRACE("make_extend_array");
 
-	char **array = NULL;
+	char **array = NULL;	// initialize the array
 
-	char *line = NULL;
+	char *line = NULL;	// initailize the input line and buffer len
 	size_t len = 0;
 
-	int index = 0;
+	int index = 0;	// initialize the input index and total size with 10 strings
 	int SIZE = 10;
 
-	linkedNode* list;
+	linkedNode* list; // initialize the list head and current list
 	linkedNode* current;
 
 	array = new_arr(array, SIZE);  // 10 strings
 	while(getline(&line, &len, stdin) != -1) {
-        // Check if there is more string needed
+        // check if there is more string needed
         if (index == SIZE) {
             SIZE += 1;
             array = add_size(array, SIZE);
         }
 
-		// Insert command read from file into char** array
+		// insert command read from stdin into char** array
 		alloc_string(array, index, len);
         strcpy(array[index], line);
 
-		if (index == 0){
+		// insert command read from stdin into linked list
+		if (index == 0){ // if it's the start, create node for the head, and set current to head
 			list = CreateNode(line, index, len);
 			current = list;
 		}
-		else{
+		else{ // if it's not the start, create next node and set the current to next node
 			current->nextNode = CreateNode(line, index, len);
             current = current->nextNode;
 		}
@@ -335,15 +349,15 @@ linkedNode* make_extend_array()
 int dup_stdout(){
     PUSH_TRACE("dup_stdout");
 
-    char* filename = "memtrace.out";
+    char* filename = "memtrace.out";	// set output file name
     int fd;
 
-    if((fd = open(filename, O_RDWR | O_CREAT, 0777)) < 0){
-        printf("error: memtrace.out can't be created \n");
+    if((fd = open(filename, O_RDWR | O_CREAT, 0777)) < 0){ // create or open the file and return a file descriptor of the file
+        printf("error: memtrace.out can't be created \n"); // if fail, print error
         exit(2);
     }
 
-    dup2(fd, STDOUT_FILENO);
+    dup2(fd, STDOUT_FILENO);	// duplicate file descriptor
     close(fd);
 
     POP_TRACE();
@@ -361,11 +375,11 @@ int main()
         return 1;
     }
 
-	linkedNode* list = make_extend_array();
-	PrintNodes(list);
+	linkedNode* list = make_extend_array();	// start the function of reading command input, and return a head linked node
+	PrintNodes(list);	// recursively print the whole linked list
 
-	FreeList(list);
-	free(list);
+	FreeList(list);	// free all node in linked list, except the head
+	free(list);	// free the head of the linked list
 
 	POP_TRACE();
 
