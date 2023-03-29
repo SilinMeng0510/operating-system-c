@@ -203,23 +203,25 @@ void PrintNodes(linkedNode* tempNode){
     PUSH_TRACE("PrintNodes");
 
     printf("linkedlist[%d]=%s", tempNode->index, tempNode->line);
-    if(tempNode->nextNode == NULL){
-        return;
+    if(tempNode->nextNode != NULL){
+        return PrintNodes(tempNode->nextNode);
     }
 
     POP_TRACE();
-	return PrintNodes(tempNode->nextNode);
+	return;
 }
 
 
 void FreeList(linkedNode* tempNode){
     PUSH_TRACE("FreeList");
+
     if(tempNode->nextNode != NULL){
         FreeList(tempNode->nextNode);
 		free(tempNode->nextNode);
     }
     free(tempNode->line);
-    POP_TRACE();
+	
+    POP_TRACE();	
 	return;
 }
 
