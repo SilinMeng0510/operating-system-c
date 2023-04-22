@@ -79,6 +79,7 @@ struct nlist *insert(char *command, int pid, int index)
     return np;
 }
 
+void executeCommand(char* line, int index, int restart);
 
 int main(void){
 	pid_t	pid;	// initialize local variable for managing child processes
@@ -104,49 +105,7 @@ int main(void){
 			fprintf(stderr, "error: can't fork");
 		} 
 		else if (pid == 0) {	// if fork success
-			sprintf(filename_out, "%d.out", getpid());
-        	sprintf(filename_err, "%d.err", getpid());
-
-			int fdout, fderr;	// create file descriptor for both files (out and err)
-			if ((fdout = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
-				perror("open file failed");	//if open failed, report error
-                exit(2);
-			}
-			if ((fderr = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
-				perror("open file failed");	//if open failed, report error
-                exit(2);
-			}
-			
-			dup2(fdout, STDOUT_FILENO);	// duplicate the file descriptor of both files into stdout and stderr
-			close(fdout);
-			dup2(fderr, STDERR_FILENO);
-			close(fderr);
-
-			fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", index, getpid(), getppid()); // write first starting message to the out file
-			fflush(STDIN_FILENO);	// clean the buffer
-
-			char *args[strlen(line) + 1];	// parse the command string into an array
-			int count = 0;
-			args[count] = strtok(line, " ");
-			while (args[count] != NULL) {
-				count++;
-				args[count] = strtok(NULL, " ");
-			}
-
-			char *argv[count+1];	// transfer command into a valid array with proper size
-			for (int i = 0; i < count; i++){
-				argv[i] = args[i];
-			}
-
-			int len = strlen(argv[count-1]); // clean newline in our command
-			argv[count-1][--len] = '\0';
-
-			argv[count] = NULL;	// set the last element in command to NULL for execvp
-
-			if (execvp(argv[0], argv) < 0){	// execvp our command, replacing the current process
-				perror("execvp failed");	//if execvp failed, report error
-				exit(2);
-			}
+			executeCommand(line, index, 0);
 		}
 		else if (pid > 0) {
 			if ((np = insert(line, pid, index)) == NULL){
@@ -198,9 +157,81 @@ int main(void){
         }
 
 		int elapsed = (np->finishtime.tv_sec - np->starttime.tv_sec);
-		fprintf(stdout, "Finished at %ld, runtime duration %d\n", np->finishtime.tv_sec, elapsed);	// write end message to the out file
+		fprintf(stdout, "Finished at %ld, runtime duration %d\n", np->finishtime.tv_sec, elapsed);	// write runtime message to the out file
 		fflush(STDIN_FILENO);	// clean the buffer
+		if (elapsed <= 2){
+			fprintf(stderr, "spawning too fast\n");	// write "too fast" message to the err file
+		}
+		else {
+			clock_gettime(CLOCK_MONOTONIC, &start);
+			if ((pid = fork()) < 0) {	//if fork failed, report error
+				fprintf(stderr, "error: can't fork");
+			} 
+			else if (pid == 0) {	// if fork success
+				executeCommand(np->command, np->index, 1);
+			}
+			else if (pid > 0) {
+				if ((np = insert(np->command, pid, np->index)) == NULL){
+					perror("insert list failed");	//if insert failed, report error
+                	exit(2);
+				}
+				np->starttime = start;
+			}
+		}
 	}
 
 	exit(0);
+}
+
+void executeCommand(char* line, int index, int restart){
+	char filename_out[10];	// create the file name for both out and err
+	char filename_err[10];
+	sprintf(filename_out, "%d.out", getpid());
+    sprintf(filename_err, "%d.err", getpid());
+
+	int fdout, fderr;	// create file descriptor for both files (out and err)
+	if ((fdout = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+		perror("open file failed");	//if open failed, report error
+        exit(2);
+	}
+	if ((fderr = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
+		perror("open file failed");	//if open failed, report error
+        exit(2);
+	}
+			
+	dup2(fdout, STDOUT_FILENO);	// duplicate the file descriptor of both files into stdout and stderr
+	close(fdout);
+	dup2(fderr, STDERR_FILENO);
+	close(fderr);
+
+	if(restart){
+		fprintf(stdout, "RESTARTING\n"); // write first starting message to the out file
+		fflush(STDIN_FILENO);	// clean the buffer
+		fprintf(stderr, "RESTARTING\n");	// write "too fast" message to the err file
+	}
+	fprintf(stdout, "Starting command %d: child %d pid of parent %d\n", index, getpid(), getppid()); // write first starting message to the out file
+	fflush(STDIN_FILENO);	// clean the buffer
+
+	char *args[strlen(line) + 1];	// parse the command string into an array
+	int count = 0;
+	args[count] = strtok(line, " ");
+	while (args[count] != NULL) {
+		count++;
+		args[count] = strtok(NULL, " ");
+	}
+
+	char *argv[count+1];	// transfer command into a valid array with proper size
+	for (int i = 0; i < count; i++){
+		argv[i] = args[i];
+	}
+
+	int len = strlen(argv[count-1]); // clean newline in our command
+	argv[count-1][--len] = '\0';
+
+	argv[count] = NULL;	// set the last element in command to NULL for execvp
+
+	if (execvp(argv[0], argv) < 0){	// execvp our command, replacing the current process
+		perror("execvp failed");	//if execvp failed, report error
+		exit(2);
+	}
 }
