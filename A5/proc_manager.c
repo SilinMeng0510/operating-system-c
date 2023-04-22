@@ -81,6 +81,41 @@ struct nlist *insert(char *command, int pid, int index)
 
 void executeCommand(char* line, int index, int restart);
 
+// -----------------------------------------
+// function add_size will add an extra string space to an array.
+// This function is adding more memory space for our array, using realloc
+// Returns the pointer of the reallocated array of string (updated)
+char** add_size(char** array, int size) {
+
+    array = (char**) realloc(array, sizeof(char*) * size);	// reallocate the space for bigger array
+
+    return array;
+}// end add_size
+
+
+// -----------------------------------------
+// function new_size will create an initial array stroing 10 pointers.
+// This function is allocating 10 char* memory space for our array, using malloc
+// Returns the pointer of new array of string 
+char** new_arr(char** array, int size) {
+
+    array = (char**) malloc(sizeof(char*) * size);	// allocate an array that can store specified number of strings
+
+    return array;
+}// end new_arr
+
+
+// -----------------------------------------
+// function alloc_string will allocate memory space for a string.
+// This function is allocating memory space of the input length for our array, using malloc
+// Returns the pointer of string 
+void alloc_string(char** array, int index, int length) {
+
+    array[index] = (char*) malloc(sizeof(char) * length); // allocate space for the string
+
+	return;
+}// end alloc_string
+
 int main(void){
 	pid_t	pid;	// initialize local variable for managing child processes
 	int	status;
@@ -89,38 +124,62 @@ int main(void){
 	char *line = NULL;	// initailize the input line and buffer len
 	size_t len = 0;
 
+	char **array = NULL;	// initialize the array
+
+	index = 0;	// initialize the input index and total size with 10 strings
+	int SIZE = 1; // initiate the size of array to 1 strings
+
+	array = new_arr(array, SIZE);  // initiate 1 string
+	while(getline(&line, &len, stdin) != -1) {
+        // check if there is more string needed
+        if (index == SIZE) {
+            SIZE += 1;
+            array = add_size(array, SIZE);
+        }
+
+		// insert command read from stdin into char** array
+		alloc_string(array, index, len);
+        strcpy(array[index], line);
+
+		++index;
+	}
+	free(line);
+
 	struct nlist *np; // initialize the pointer to hash list
 
 	char filename_out[10];	// create the file name for both out and err
 	char filename_err[10];
 
 	struct timespec start, finish; // initialize time spec
-	
-	index = 0;
-	while(getline(&line, &len, stdin) != -1) { // reading command line input until there is a break ^D
 
-		++index;	// keep updated with number of command
+	for(int cml = 0; cml < index; cml++) { // implement process in parallel
+
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		if ((pid = fork()) < 0) {	//if fork failed, report error
-			fprintf(stderr, "error: can't fork");
+			fprintf(stderr, "error: can't fork (parent error)");
 		} 
 		else if (pid == 0) {	// if fork success
-			executeCommand(line, index, 0);
+			executeCommand(array[cml], cml + 1, 0);
 		}
 		else if (pid > 0) {
-			if ((np = insert(line, pid, index)) == NULL){
-				perror("insert list failed");	//if insert failed, report error
+			if ((np = insert(array[cml], pid, cml + 1)) == NULL){
+				perror("insert list failed (parent error)");	//if insert failed, report error
                 exit(2);
 			}
 			np->starttime = start;
 		}
 	}
-	free(line);
+
+	//now deallocate it
+	for(int i = 0; i < SIZE; i++){
+		free(array[i]);
+	}
+	free(array);
 
 	while((pid = wait(&status)) > 0){	// wait until all child processes are done
 		clock_gettime(CLOCK_MONOTONIC, &finish);
 		if ((np = lookup(pid)) == NULL){
-			perror("lookup list failed");	//if lookup failed, report error
+			perror("lookup list failed (parent error)");	//if lookup failed, report error
             exit(2);
 		}
 		np->finishtime = finish;
@@ -130,11 +189,11 @@ int main(void){
 
 		int fdout, fderr;	// get file descriptor for both files (out and err)
 		if ((fdout = open(filename_out, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
-			perror("open file failed");	//if open failed, report error
+			perror("open file failed (parent error)");	//if open failed, report error
             exit(2);
 		}
 		if ((fderr = open(filename_err, O_RDWR | O_CREAT | O_APPEND, 0777)) < 0){
-			perror("open file failed");	//if open failed, report error
+			perror("open file failed (parent error)");	//if open failed, report error
             exit(2);
 		}
 
@@ -165,7 +224,7 @@ int main(void){
 		else {
 			clock_gettime(CLOCK_MONOTONIC, &start);
 			if ((pid = fork()) < 0) {	//if fork failed, report error
-				fprintf(stderr, "error: can't fork");
+				fprintf(stderr, "error: can't fork (parent error)");
 			} 
 			else if (pid == 0) {	// if fork success
 				executeCommand(np->command, np->index, 1);
@@ -179,6 +238,18 @@ int main(void){
 			}
 		}
 	}
+
+	// Free all nodes in hashtable
+    for(int j = 0; j < HASHSIZE; j++) {
+        struct nlist *temp = hashtab[j];
+        while(temp != NULL) {
+            struct nlist* next = temp->next;
+			free(temp->command);
+            free(temp);
+            temp = next;
+        }
+        hashtab[j] = NULL;
+    }
 
 	exit(0);
 }
