@@ -1,9 +1,10 @@
 /**
- * Description: Assignment 3: This code read multiple commands through stdin and run them through execvp. The result will be written in created files under name of child pid.
+ * Description: Assignment 5: This code read multiple commands through stdin and run them through execvp in parallel. 
+ * The result will be written in created files under name of child pid. We will use hashtble to store info for each process, and restart if its slow
  * Author names: Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
- * Last modified date: 03/19/2023
- * Creation date: 03/17/2023
+ * Last modified date: 04/22/2023
+ * Creation date: 04/20/2023
  **/
 
 #include <sys/wait.h> //import library
@@ -166,7 +167,7 @@ int main(void){
 				perror("insert list failed (parent error)");	//if insert failed, report error
                 exit(2);
 			}
-			np->starttime = start;
+			np->starttime = start; // set start time
 		}
 	}
 
@@ -182,7 +183,7 @@ int main(void){
 			perror("lookup list failed (parent error)");	//if lookup failed, report error
             exit(2);
 		}
-		np->finishtime = finish;
+		np->finishtime = finish; // set end time
 
 		sprintf(filename_out, "%d.out", pid);
         sprintf(filename_err, "%d.err", pid);
@@ -234,15 +235,15 @@ int main(void){
 					perror("insert list failed");	//if insert failed, report error
                 	exit(2);
 				}
-				np->starttime = start;
+				np->starttime = start;	// set restart start time
 			}
 		}
 	}
 
 	// Free all nodes in hashtable
-    for(int j = 0; j < HASHSIZE; j++) {
-        struct nlist *temp = hashtab[j];
-        while(temp != NULL) {
+    for(int j = 0; j < HASHSIZE; j++) {	// iterate through the hashtable
+        struct nlist *temp = hashtab[j];	// get the head list
+        while(temp != NULL) {			// free the entire hash chain
             struct nlist* next = temp->next;
 			free(temp->command);
             free(temp);
