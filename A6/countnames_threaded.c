@@ -69,19 +69,47 @@ struct NAME_NODE
 {
   THREAD_NAME name_count;
   struct NAME_NODE *next;
-} NODE;
+};
+typedef struct NAME_NODE NODE;
 
+static NODE* head = NULL;
 
+// -----------------------------------------
+// function FreeList will recursively free all memory of address of linked nodes in the list.
+// Returns void after done
+void freeList(NODE* tempNode){
+
+    if(tempNode->next != NULL){	// if this is not the last node, free the next node first
+        freeList(tempNode->next);
+		    free(tempNode->next);	// after the current node
+    }	
+	return;
+}
+
+// -----------------------------------------
+// function PrintNodes will recursively print all linked nodes in a list.
+// Returns void after done
+void printNodes(NODE* tempNode){
+
+    if(tempNode->next != NULL){	// if this is not the last node, print the next node
+        printNodes(tempNode->next);
+    }
+    printf("%s: %d\n", tempNode->name_count.name, tempNode->name_count.count); // print current node
+
+	return;
+}
 
 /*********************************************************
 // function main 
 *********************************************************/
 int main(int argc, char** argv)
 {
+  printf("==================================== Log Messages ====================================\n");
   if(argc != 3){
     perror("Please enter exact two input files!\n");
     exit(1);
   }
+  head = (NODE*) calloc(1, sizeof(NODE));
 
   printf("Create first thread\n");
   pthread_create(&tid1, NULL, thread_runner, argv[1]);
@@ -94,7 +122,11 @@ int main(int argc, char** argv)
   pthread_join(tid2, NULL);
   printf("Second thread exited\n");
 
-  //TODO print out the sum variable with the sum of all the numbers
+  printf("==================================== Name Counts ====================================\n");
+  printNodes(head->next);
+
+  freeList(head);
+  free(head);
 
   exit(0);
 
@@ -158,11 +190,35 @@ void* thread_runner(void* filename)
       ++lineCounter; // Count which line we are in
       continue;
     }
+    if (line[strlen(line) - 1] == '\n') {
+      line[strlen(line) - 1] = '\0';
+    }
+/////////////////////////
+    pthread_mutex_lock(&tlock3);
+    int found = 0;
+    NODE* node = head;
+    while((node = node->next) != NULL){
+      if (strcmp(node->name_count.name, line) == 0){
+        node->name_count.count++;
+        found = 1;
+        break;
+      }
+    }
+    if(!found){
+      THREAD_NAME name = {{'\0', 0}};
+      strcpy(name.name, line);
+      name.count = 1;
+      NODE* new = (NODE*) calloc(1, sizeof(NODE));
+      new->name_count = name;
+      new->next = head->next;
+      head->next = new;
+    }
+    pthread_mutex_unlock(&tlock3);
+/////////////////////////
     ++lineCounter;
   }
   free(line);
   fclose(file);
-
 
   pthread_mutex_lock(&tlock1);   // critical section starts for log message
   logindex++;
