@@ -1,0 +1,75 @@
+    1  mkdir wk12
+    2  ls
+    3  cd wk12
+    4  cd
+    5  sudo apt update
+    6  sudo apt install build-essential dkms linux-headers-$(uname-r)
+    7  ./autorun.sh
+    8  cd wk12
+    9  "gcc -o q4 q4.c
+   10  gcc -o q4 q4.c
+   11  ./q4
+   12  valgrind --leak-check=yes ./q4
+   13  sudo snap install valgrind
+   14  cd
+   15  sudo snap install valgrind
+   16  sudo apt install valgrind
+   17  cd wk12
+   18  valgrind --leak-check=full  ./q4
+   19  gcc -g -o q4 q4.c
+   20  gdb> run
+   21  cd gdb
+   22  gdb> run
+   23  gdb ./q4
+   24  gcc -0 q4 q4.c
+   25  gcc -o q4 q4.c
+   26  ./q4
+   27  valgrind --leak-check=full  ./q4
+   28  gcc -o q5 q5.c
+   29  ./q5
+   30  valgrind --leak-check=full  ./q5
+   31  gcc -o q6 q6.c
+   32  ./q6
+   33  valgrind --leak-check=full  ./q6
+   34  gcc -o q6 q6.c
+   35  cd wk12
+   36  gcc -o q6 q6.c
+   37  ./q6
+   38  valgrind --leak-check=full  ./q6
+   39  gcc -o q5 q5.c
+   40  ./q5
+   41  gcc -o q4 q4.c
+   42  ./q4
+   43  gcc -o q6 q6.c
+   44  ./q6
+   45  valgrind --leak-check=full  ./q6
+   46  wget http://www.apuebook.com/src.3e.tar.gz
+   47  gunzip src.3e.tar.gz
+   48  tar xvf src.3e.tar
+   49  cd apue.3e
+   50  cd proc
+   51  make all
+   52  cd apue.3e
+   53  cd
+   54  ls
+   55  cd apue.3e
+   56  rsync -arv filedir/ filedir1/
+   57  cp -r filedir/ filedir2/
+   58  ls -latr filedir1/
+   59  ls -latr filedir2/
+   60  cd filedir1
+   61  find cdpwd.c
+   62  locate changemod.c
+   63  du umask.c
+   64  rm access.c
+   65  stat unlink.c
+   66  df zap.c
+   67  ln zap.c mycd.c
+   68  ln zap.c filletype.c
+   69  ls
+   70  history > worksheet13.log
+    What difference do you observe between the two directories:
+
+       The difference is order how the files inside each directory are shown. Filedir1
+
+       seems to be sorted in time of modification with oldest to newest while filedir is sorted by modification time in order of newest to oldest
