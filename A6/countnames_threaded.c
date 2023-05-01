@@ -1,5 +1,6 @@
 /**
- * Description: Assignment 6: countnames_threaded: 
+ * Description: Assignment 6: countnames_threaded: this program read only 2 text files with names, and count the occurance of all names from the files. The program will
+ * create 2 threads doing the job concurrently while maintaining thread_safe.
  * Author names: Silin Meng, Ibrahim Dobashi
  * Author emails: silin.meng@sjsu.edu, ibrahim.dobashi@sjsu.edu
  * Last modified date: 4/29/23
@@ -105,27 +106,27 @@ void printNodes(NODE* tempNode){
 int main(int argc, char** argv)
 {
   printf("==================================== Log Messages ====================================\n");
-  if(argc != 3){
+  if(argc != 3){    // return error with the file number is not 2
     perror("Please enter exact two input files!\n");
     exit(1);
   }
-  head = (NODE*) calloc(1, sizeof(NODE));
+  head = (NODE*) calloc(1, sizeof(NODE)); // allocate space for head of linkedlist
 
-  printf("Create first thread\n");
+  printf("Create first thread\n");  // create thread1 with a filename
   pthread_create(&tid1, NULL, thread_runner, argv[1]);
   
-  printf("Create second thread\n");
+  printf("Create second thread\n"); // create thread2 with a filename
   pthread_create(&tid2, NULL, thread_runner, argv[2]);
   
-  pthread_join(tid1, NULL);
+  pthread_join(tid1, NULL); // wait for thread1
   printf("First thread exited\n");
-  pthread_join(tid2, NULL);
+  pthread_join(tid2, NULL); // wait for thread2
   printf("Second thread exited\n");
 
   printf("==================================== Name Counts ====================================\n");
-  printNodes(head->next);
+  printNodes(head->next); // print out the list
 
-  freeList(head);
+  freeList(head); // free the list's memory spaces
   free(head);
 
   exit(0);
@@ -138,10 +139,10 @@ int main(int argc, char** argv)
 **********************************************************************/
 void* thread_runner(void* filename)
 {
-  time_t t = time(NULL);
+  time_t t = time(NULL);    // set timer for the thread
   struct tm tm = *localtime(&t);
 
-  pthread_t me;
+  pthread_t me;     // get thread number or id
   me = pthread_self();
 
   pthread_mutex_lock(&tlock2);  // critical section starts for allocating THREADDATA
@@ -154,88 +155,94 @@ void* thread_runner(void* filename)
   pthread_mutex_lock(&tlock1);  // critical section starts for log message
   logindex++;
   if (p != NULL && p->creator == me) {
-    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I created THREADDATA %p\n",
+    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I created THREADDATA %p\n",    // print log message of creating threaddata
       logindex, (long) me, (int)getpid(), tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (long) me, p);
   }
   else {
-    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I can access the THREADDATA %p\n",
+    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I can access the THREADDATA %p\n", // print log message of secondary thread
       logindex, (long) me, (int)getpid(), tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (long) me, p);
   }
   pthread_mutex_unlock(&tlock1);  // critical section ends for log message
 
-  FILE *file = fopen((char*)filename, "r");
-  if(file == NULL) {
+  FILE *file = fopen((char*)filename, "r"); // open file
+  if(file == NULL) {  // if open file fails
     pthread_mutex_lock(&tlock1);   // critical section starts for log message
     logindex++;
     fprintf(stderr, "Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: range: cannot open file %s\n",
-      logindex, (long) me, (int)getpid(), tm.tm_mon+1, tm.tm_mday,tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (char*)filename);
+      logindex, (long) me, (int)getpid(), tm.tm_mon+1, tm.tm_mday,tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (char*)filename); // print log message of open file fails
     pthread_mutex_unlock(&tlock1);  // critical section ends for log message
-
-    pthread_exit(NULL);
   }
   else {
     pthread_mutex_lock(&tlock1);    // critical section starts for log message
     logindex++;
-    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: opened file %s.\n", logindex, (long) me, (int)getpid(),
+    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: opened file %s.\n", logindex, (long) me, (int)getpid(), // print log message of open file successfully
            tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (char*)filename);
     pthread_mutex_unlock(&tlock1);  // critical section ends for log message
-  }
- 
-  char *line = NULL;
-  size_t len = 0;
-  int lineCounter = 1;
-  while(getline(&line, &len, file) != -1) {
-    if (line[0] == '\n' || line[0] == ' ') { // Printing Error message while there is a empty line
+
+    char *line = NULL;  // necessary variables for reading file
+    size_t len = 0;
+    int lineCounter = 1;
+    while(getline(&line, &len, file) != -1) {   // read until the end of the file
+      if (line[0] == '\n' || line[0] == ' ') { // Printing Error message while there is a empty line
       fprintf(stderr, "Warning - file %s line %d is empty.\n", (char*)filename, lineCounter);
       ++lineCounter; // Count which line we are in
       continue;
-    }
-    if (line[strlen(line) - 1] == '\n') {
-      line[strlen(line) - 1] = '\0';
-    }
-/////////////////////////
-    pthread_mutex_lock(&tlock3);
-    int found = 0;
-    NODE* node = head;
-    while((node = node->next) != NULL){
-      if (strcmp(node->name_count.name, line) == 0){
-        node->name_count.count++;
-        found = 1;
-        break;
       }
-    }
-    if(!found){
-      THREAD_NAME name = {{'\0', 0}};
-      strcpy(name.name, line);
-      name.count = 1;
-      NODE* new = (NODE*) calloc(1, sizeof(NODE));
-      new->name_count = name;
-      new->next = head->next;
-      head->next = new;
-    }
-    pthread_mutex_unlock(&tlock3);
-/////////////////////////
-    ++lineCounter;
-  }
-  free(line);
-  fclose(file);
+      if (line[strlen(line) - 1] == '\n') { // delete the newline from string
+      line[strlen(line) - 1] = '\0';
+      }
 
-  pthread_mutex_lock(&tlock1);   // critical section starts for log message
-  logindex++;
-  if (p != NULL && p->creator == me) {
-    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I delete THREADDATA\n",
+      int found = 0;
+      NODE* node = head; 
+      pthread_mutex_lock(&tlock3);  // critical section starts for access linkedlist
+      while((node = node->next) != NULL){ // scan through the linkedlist to match the input name
+        if (strcmp(node->name_count.name, line) == 0){ // increment the count if found
+          node->name_count.count++;
+          found = 1;
+          break;
+        }
+      }
+      pthread_mutex_unlock(&tlock3);  // critical section ends for access linkedlist
+      if(!found){ // if not found
+        THREAD_NAME name = {{'\0', 0}}; // set the up the thread_name variable
+        strcpy(name.name, line);
+        name.count = 1;
+        NODE* new = (NODE*) calloc(1, sizeof(NODE));  // set the up the new linkedlist node
+  
+        pthread_mutex_lock(&tlock3);  // critical section starts for access linkedlist
+        new->name_count = name; // create and insert the new node to the head
+        new->next = head->next;
+        head->next = new;
+        pthread_mutex_unlock(&tlock3);  // critical section ends for access linkedlist
+      }
+      ++lineCounter;  // keep the line counter updated in the file
+    }
+    free(line); // free the line and file
+    fclose(file);
+  }
+
+  pthread_mutex_lock(&tlock2);  // critical section starts for allocating THREADDATA
+  if (p != NULL && p->creator == me) { // check if the thread created the THREADDATA
+    pthread_mutex_unlock(&tlock2);  // critical section ends for allocating THREADDATA
+    pthread_mutex_lock(&tlock1);   // critical section starts for log message
+    logindex++;
+    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I delete THREADDATA\n",  // print log message that the first thread delete the Threaddata
       logindex, (long) me, (int)getpid(), tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (long) me);
+    pthread_mutex_unlock(&tlock1);  // critical section ends for log message
 
     pthread_mutex_lock(&tlock2);  // critical section starts for allocating THREADDATA
-    free((void*)p);
+    free((void*)p);   // free the thread_data and set it to NULL
     p = NULL;
     pthread_mutex_unlock(&tlock2);  // critical section ends for allocating THREADDATA
   } 
   else {
-    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I can access the THREADDATA\n",
+    pthread_mutex_unlock(&tlock2);  // critical section ends for allocating THREADDATA
+    pthread_mutex_lock(&tlock1);   // critical section starts for log message
+    logindex++;
+    printf("Logindex %d, thread %ld, PID %d, %02d/%02d/%d %02d:%02d:%02d: This is thread %ld and I can access the THREADDATA\n", // print log message of the secondary thread
       logindex, (long) me, (int)getpid(),tm.tm_mon+1, tm.tm_mday, tm.tm_year+1900, tm.tm_hour, tm.tm_min, tm.tm_sec, (long) me);
+    pthread_mutex_unlock(&tlock1);  // critical section ends for log message
   }
-  pthread_mutex_unlock(&tlock1);  // critical section ends for log message
 
   pthread_exit(NULL);
   return NULL;
