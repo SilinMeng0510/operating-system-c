@@ -68,8 +68,7 @@
    68  ln zap.c filletype.c
    69  ls
    70  history > worksheet13.log
-    What difference do you observe between the two directories:
+    What difference do you observe between the two directories?
+        The difference is that filedir1 includes the original modification date or time from filedir, and filedir2 just simple copy the file from filedir.
+        filedir1 has more information from the original filedir than filedir2.
 
-       The difference is order how the files inside each directory are shown. Filedir1
-
-       seems to be sorted in time of modification with oldest to newest while filedir is sorted by modification time in order of newest to oldest
